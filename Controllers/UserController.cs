@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using UserProfileAPI.Data;
+using UserProfileAPI.Dtos;
 using UserProfileAPI.Interfaces;
 
 
@@ -15,118 +17,78 @@ namespace UserProfileAPI.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly DbContext _dbContext;
+        private readonly DataContext _dbContext;
         private readonly IUserRepository _userRepo;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public UserController(DbContext dbContext, UserRepository userRepo, IWebHostEnvironment webHostEnvironment)
+        public UserController(DataContext dbContext, IUserRepository userRepo, IWebHostEnvironment webHostEnvironment)
         {
             _dbContext = dbContext;
             _userRepo = userRepo;
             _webHostEnvironment = webHostEnvironment;
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("User/{id}")]
         public async Task<ActionResult<UserModel>> GetUser(int id)
         {
             var user = await _userRepo.GetUserWithDetailsAsync(id);
-
-            if (user == null)
-            {
-                return NotFound();
-            }
-
+            if (user == null) return NotFound();
             return user;
         }
 
-        
-        [HttpPost("RegisterUser")]
-        public async Task<ActionResult<UserModel>> AddUser(UserModel user)
+        [HttpPost("Create/User")]
+        public async Task<ActionResult<UserModel>> AddUser(CreateUserDTO userDto)
         {
-            var result = await _userRepo.AddUserAsync(user);
+            var result = await _userRepo.AddUserAsync(userDto);
+            return Ok(result);
+        }
+
+        [HttpPut("Edit/{id}/User")]
+        public async Task<ActionResult<UserModel>> UpdateUser(int id, UpdateUserDTO updateUserDto)
+        {
+            var result = await _userRepo.UpdateUserAsync(id, updateUserDto);
+            if (result == null) return NotFound("User not found");
 
             return Ok(result);
-          
         }
 
-      
-        [HttpPut("{id}")]
-        public async Task<ActionResult<UserModel>> UpdateUser(int id, UserModel user)
-        {
-            
-            if (id != user.Id)
-            {
-                return BadRequest();
-            }
-
-            var result = await _userRepo.UpdateUserAsync(id, user);
-
-            if (result == null)
-            {
-                return NotFound();
-            }
-
-            return result;
-        }
-
-       
-        [HttpDelete("{id}")]
+        [HttpDelete("Delete/{id}/User")]
         public async Task<ActionResult<UserModel>> DeleteUser(int id)
         {
-            
             var result = await _userRepo.DeleteUserAsync(id);
-
-            if (result == null)
-            {
-                return NotFound();
-            }
-
+            if (result == null) return NotFound();
             return Ok(result);
         }
 
-
-        
-        [HttpPost("{id}/image")]
+        [HttpPost("upload/{id}/image")]
         public async Task<ActionResult> UploadUserImage(int id, IFormFile image)
         {
-            // ფიზიკური პირის სურათის ატვირთვა/ცვლილება
             var user = await _userRepo.GetUserWithDetailsAsync(id);
+            if (user == null) return NotFound("User not found");
+            if (image == null || image.Length == 0) return BadRequest("No image provided");
 
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            if (image == null || image.Length == 0)
-            {
-                return BadRequest("No image provided");
-            }
-
-            // Create directory if not exists
-            var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images", "users");
-            if (!Directory.Exists(uploadsFolder))
-            {
-                Directory.CreateDirectory(uploadsFolder);
-            }
+            // Ensure wwwroot path is set
+            var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath ?? "wwwroot", "images", "users");
+            if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
 
             // Delete old image if exists
-            if (!string.IsNullOrEmpty(user.ImagePath) && System.IO.File.Exists(user.ImagePath))
+            if (!string.IsNullOrEmpty(user.ImagePath))
             {
-                System.IO.File.Delete(user.ImagePath);
+                var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath ?? "wwwroot", user.ImagePath.TrimStart('/'));
+                if (System.IO.File.Exists(oldImagePath)) System.IO.File.Delete(oldImagePath);
             }
 
-            // Save new image
-            var uniqueFileName = Guid.NewGuid().ToString() + "_" + image.FileName;
+            // Generate a unique file name
+            var uniqueFileName = $"{Guid.NewGuid()}_{Path.GetFileName(image.FileName)}";
             var filePath = Path.Combine(uploadsFolder, uniqueFileName);
 
+            // Save new image
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
                 await image.CopyToAsync(stream);
             }
 
-            // Update user image path
-            user.ImagePath = "/images/users/" + uniqueFileName;
-            await _userRepo.UpdateUserAsync(id, user);
+         
 
             return Ok(new { imagePath = user.ImagePath });
         }
