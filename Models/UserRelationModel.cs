@@ -8,7 +8,7 @@ namespace UserProfileAPI.Models
     {
         [Key]
         public int Id { get; set; }
-        
+        [StringLength(8,ErrorMessage = "კავშირის ტიპი უნდა იყოს 'კოლეგა','ნაცნობი','ნათესავი' ან 'სხვა'")]
         public string? RelationType { get; set; }
 
         [Required]
@@ -20,14 +20,5 @@ namespace UserProfileAPI.Models
 
         [ForeignKey("RelatedUserId")]
         public UserModel RelatedUser {  get; set; }
-
-        public static readonly List<string> RelationTypes = new List<string>
-        {
-            "კოლეგა",
-            "ნაცნობი",
-            "ნათესავი",
-            "სხვა"
-        };
-
     }
 }

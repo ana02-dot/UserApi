@@ -13,41 +13,45 @@ namespace UserProfileAPI.Models
         [Required]
         [StringLength(50, MinimumLength = 2, ErrorMessage = "სახელი უნდა შეიცავდეს 2-50 სიმბოლოს")]
         [RegularExpression(@"^([ა-ჰ]+|[a-zA-Z]+)$", ErrorMessage = "სახელი უნდა შეიცავდეს მხოლოდ ქართულ ან მხოლოდ ლათინურ ასოებს")]
-        public string? FirstName { get; set; }
+        public string FirstName { get; set; }
 
         [Required]
         [StringLength(50, MinimumLength = 2, ErrorMessage = "გვარი უნდა შეიცავდეს 2-50 სიმბოლოს")]
         [RegularExpression(@"^([ა-ჰ]+|[a-zA-Z]+)$", ErrorMessage = "სახელი უნდა შეიცავდეს მხოლოდ ქართულ ან მხოლოდ ლათინურ ასოებს")]
-        public string? LastName { get; set; }
-
+        public string LastName { get; set; }
+        [Required]
+        [StringLength(4, ErrorMessage = "სქესი უნდა იყოს 'ქალი' ან 'კაცი'")]
         public string GenderType { get; set; }
 
         [Required]
         [RegularExpression(@"^\d{11}$", ErrorMessage = "პირადი ნომერი უნდა შეიცავდეს 11 სიმბოლოს")]
-        public string? PersonalNumber { get; set; }
+        public string PersonalNumber { get; set; }
 
         [Required]
         [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}")]
         public DateTime DateOfBirth { get; set; }
 
-        public int CityId { get; set; }
-        [JsonIgnore]
-        public CityModel City { get; set; }
-        [JsonIgnore]
         [StringLength(255, ErrorMessage = "სურათის მისამართი უნდა შეიცავდეს მაქსიმუმ 255 სიმბოლოს")]
-        public string ImagePath { get; set; }
-        [JsonIgnore]
-        public List<PhoneNumberModel> PhoneNumbers { get; set; } = new List<PhoneNumberModel>();
+        public string? ImagePath { get; set; }
+
+        [Required]
+        [StringLength(50, MinimumLength = 4, ErrorMessage = "ტელეფონის ნომერი უნდა შეიცავდეს მინიმუმ 4 სიმბოლოს")]
+        public string Number { get; set; }
+
+        [Required]
+        [StringLength(8, MinimumLength = 5, ErrorMessage = "მობილურის ტიპი უნდა იყოს 'ოფისი','სახლი' ან 'მობილური'")]
+        public string? PhoneNumberType { get; set; }
+
+        [Required]
+        public int CityId { get; set; }
+
+        [ForeignKey("CityId")]
+        public CityModel City { get; set; }
+       
+
         [JsonIgnore]
         public List<UserRelationModel> UserRelations { get; set; } = new List<UserRelationModel>();
-
-        public static readonly List<string> GenderTypes = new List<string>()
-        {
-            "ქალი",
-            "კაცი"
-        };
-
 
     }
 }
