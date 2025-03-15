@@ -1,19 +1,22 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using UserProfileAPI.Data;
+using UserProfileAPI.Dtos;
+using UserProfileAPI.Filters;
 using UserProfileAPI.Interfaces;
 using UserProfileAPI.Models;
 
 namespace UserProfileAPI.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
+    
     public class UserRelationController : ControllerBase
     {
-        private readonly DbContext _dbContext;
+        private readonly DataContext _dbContext;
         private readonly IRelationUserRepository _relationUserRepository;
 
-        public UserRelationController(IRelationUserRepository relationRepo, DbContext dbContext)
+        public UserRelationController(IRelationUserRepository relationRepo, DataContext dbContext)
         {
             _relationUserRepository = relationRepo;
             _dbContext = dbContext;
@@ -23,48 +26,42 @@ namespace UserProfileAPI.Controllers
         public async Task<ActionResult<Dictionary<int, Dictionary<string, int>>>> GetUserRelationsReport()
         {
             var report = await _relationUserRepository.GetUserRelationsReportByConnectionType();
-            return report;
+            return report == null || !report.Any()
+                ? NotFound(new { Message = "დაკავშირებული პირების შესახებ ინფორმაცია არ მოიძებნა" })
+                : Ok(report);
         }
 
         [HttpPost]
-        public async Task<ActionResult<UserRelationModel>> AddRelatedUser(UserRelationModel userRelation)
+        public async Task<ActionResult<UserRelationModel>> AddRelatedUser(AddUserRelationDTO addUserRelationDto)
         {
-            var result = await _relationUserRepository.AddRealtedUser(userRelation);
-            return Ok(result);
+            var user = await _dbContext.Users.FindAsync(addUserRelationDto.UserId);
+            var relatedUser = await _dbContext.Users.FindAsync(addUserRelationDto.RelatedUserId);
+
+            if (user == null || relatedUser == null)
+                return BadRequest(new { Message = "მომხმარებელი ან მასთან დაკავშირებული მომხმარებელი არ არსებობს" });
+
+            var result = await _relationUserRepository.AddRealtedUser(addUserRelationDto);
+            return CreatedAtAction(nameof(GetRelation), new { id = result.Id }, result);
 
         }
 
-       
-        [HttpPut("{id}")]
-        public async Task<ActionResult<UserRelationModel>> UpdateRelatedUser(int id, UserRelationModel userRelation)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<UserRelationModel>> GetRelation(int id)
         {
-            if (id != userRelation.Id)
-            {
-                return BadRequest();
-            }
-
-            var result = await _relationUserRepository.UpdateRealtedUser(id, userRelation);
-
-            if (result == null)
-            {
-                return NotFound();
-            }
-
-            return result;
+            var relation = await _relationUserRepository.GetRelationAsync(id);
+            return relation == null
+                ? NotFound(new { Message = $"კავშირი ID {id}-ით არ მოიძებნა" })
+                : Ok(relation);
         }
 
-       
         [HttpDelete("{id}")]
         public async Task<ActionResult<UserRelationModel>> DeleteRelatedUser(int id)
         {
             var result = await _relationUserRepository.DeleteRealtedUser(id);
 
-            if (result == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(result);
+            return result == null
+                ? NotFound(new { Message = $"ურთიერთობა ID {id}-ით არ მოიძებნა" })
+                : Ok(result);
         }
 
     }
