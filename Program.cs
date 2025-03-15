@@ -17,8 +17,11 @@ builder.Services.AddSwaggerGen(c =>
         Version = "v1",
         Title = "Physical User Directory",
         Description = "A rest API for managing physical users and their relationship to others"
+
     });
-    
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, "UserProfileAPI.xml");
+    c.IncludeXmlComments(xmlPath);
+
 });
 
 
