@@ -4,7 +4,6 @@ namespace UserProfileAPI.Dtos
 {
     public class CreateUserDTO
     {
-        [Required]
         public int Id { get; set; }
 
         [Required]
@@ -18,7 +17,7 @@ namespace UserProfileAPI.Dtos
         public string LastName { get; set; }
 
         [Required]
-        [StringLength(4, ErrorMessage = "სქესი უნდა იყოს 'ქალი' ან 'კაცი'")]
+        [RegularExpression(@"^(ქალი|კაცი)$", ErrorMessage = "სქესი უნდა იყოს 'ქალი' ან 'კაცი'")]
         public string GenderType { get; set; }
 
         [Required]
@@ -29,15 +28,14 @@ namespace UserProfileAPI.Dtos
         [DataType(DataType.Date)]
         public DateTime DateOfBirth { get; set; }
 
-        [Required]
-        [StringLength(8, MinimumLength = 5, ErrorMessage = "მობილურის ტიპი უნდა იყოს 'ოფისი', 'სახლი' ან 'მობილური'")]
+        [Required(ErrorMessage = "ტელეფონის ტიპის ველი სავალდებულოა")]
+        [RegularExpression(@"^(მობილური|ოფისი|სახლი)$", ErrorMessage = "ტელეფონის ტიპი უნდა იყოს 'მობილური', 'ოფისი' ან 'სახლი'")]
         public string PhoneNumberType { get; set; }
 
         [Required]
         [StringLength(50, MinimumLength = 4, ErrorMessage = "ტელეფონის ნომერი უნდა შეიცავდეს მინიმუმ 4 სიმბოლოს")]
         public string Number { get; set; }
-
         [Required]
-        public int CityId { get; set; }
+        public string CityName { get; set; }
     }
 }
