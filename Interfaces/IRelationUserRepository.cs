@@ -1,12 +1,13 @@
-﻿using UserProfileAPI.Models;
+﻿using UserProfileAPI.Dtos;
+using UserProfileAPI.Models;
 
 namespace UserProfileAPI.Interfaces
 {
     public interface IRelationUserRepository
     {
-        Task<UserRelationModel> AddRealtedUser(UserRelationModel userRelation);
-        Task<UserRelationModel> UpdateRealtedUser(int id, UserRelationModel userRelation);
+        Task<UserRelationModel> AddRealtedUser(AddUserRelationDTO addUserRelationDto);
         Task<UserRelationModel> DeleteRealtedUser(int id);
+        Task<UserRelationModel> GetRelationAsync(int id);
         Task<Dictionary<int, Dictionary<string, int>>> GetUserRelationsReportByConnectionType();
 
     }
