@@ -29,7 +29,11 @@ namespace UserProfileAPI.Controllers
             _webHostEnvironment = webHostEnvironment;
         }
 
-
+        /// <summary>
+        /// Retrieves detailed information about a specific user by their ID.
+        /// </summary>
+        /// <param name="id">The unique identifier of the user to retrieve</param>
+        /// <returns>Returns the user's detailed information</returns>
         [HttpGet("User/{id}")]
         public async Task<ActionResult<UserModel>> GetUser(int id)
         {
@@ -38,15 +42,24 @@ namespace UserProfileAPI.Controllers
                 ? NotFound(new { Message = "მომხმარებელი არ მოიძებნა" })
                 : Ok(user);
         }
-       
+        /// <summary>
+        /// Creates a new user
+        /// </summary>
+        /// <param name="userDto">The data required to create a new user. See <see cref="CreateUserDTO"/> for required fields.</param>
+        /// <returns>The created user's details</returns>
         [HttpPost("Create/User")]
         public async Task<ActionResult<UserModel>> AddUser(CreateUserDTO userDto)
         {
             var createdUser = await _userRepo.AddUserAsync(userDto);
             return Ok(createdUser);
         }
-        
-       
+
+        /// <summary>
+        /// Updates an existing user's information
+        /// </summary>
+        /// <param name="id">The unique identifier of the user to update</param>
+        /// <param name="updateUserDto">The updated user data. See <see cref="UpdateUserDTO"/>for editable fields </param>
+        /// <returns>The updated user's details</returns>
         [HttpPut("Edit/{id}/User")]
         public async Task<ActionResult<UserModel>> UpdateUser(int id, UpdateUserDTO updateUserDto)
         {
@@ -55,7 +68,11 @@ namespace UserProfileAPI.Controllers
                 ? NotFound(new { Message = "მომხმარებელი არ მოიძებნა" })
                 : Ok(updatedUser);
         }
-       
+        /// <summary>
+        /// Deletes a user by their ID
+        /// </summary>
+        /// <param name="id">The unique identifier of the user to delete</param>
+        /// <returns>The deleted user's details</returns>
         [HttpDelete("Delete/{id}/User")]
         public async Task<ActionResult<UserModel>> DeleteUser(int id)
         {
@@ -64,7 +81,13 @@ namespace UserProfileAPI.Controllers
                 ? NotFound(new { Message = "მომხმარებელი არ მოიძებნა" })
                 : Ok(deletedUser);
         }
-      
+
+        /// <summary>
+        /// Uploads or replaces a user's image.
+        /// </summary>
+        /// <param name="id">The unique identifier of the user whose image is being uploaded.</param>
+        /// <param name="image">The image file to upload (e.g., JPG, PNG). Must not exceed 10MB.</param>
+        /// <returns>A success message</returns>
         [HttpPost("upload/{id}/image")]
         public async Task<ActionResult> UploadUserImage(int id, IFormFile image)
         {

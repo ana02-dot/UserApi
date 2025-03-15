@@ -21,7 +21,10 @@ namespace UserProfileAPI.Controllers
             _relationUserRepository = relationRepo;
             _dbContext = dbContext;
         }
-
+        /// <summary>
+        /// Retrieves a report of user relationships grouped by connection type
+        /// </summary>
+        /// <returns>A dictionary mapping user IDs to their relationship counts by type</returns>
         [HttpGet("RelationsReport")]
         public async Task<ActionResult<Dictionary<int, Dictionary<string, int>>>> GetUserRelationsReport()
         {
@@ -30,7 +33,11 @@ namespace UserProfileAPI.Controllers
                 ? NotFound(new { Message = "დაკავშირებული პირების შესახებ ინფორმაცია არ მოიძებნა" })
                 : Ok(report);
         }
-
+        /// <summary>
+        /// Creates a new relationship between two users
+        /// </summary>
+        /// <param name="addUserRelationDto">The data required to establish a user relationship. See <see cref="AddUserRelationDTO"/> for required fields</param>
+        /// <returns>The created relationship details</returns>
         [HttpPost]
         public async Task<ActionResult<UserRelationModel>> AddRelatedUser(AddUserRelationDTO addUserRelationDto)
         {
@@ -44,7 +51,11 @@ namespace UserProfileAPI.Controllers
             return CreatedAtAction(nameof(GetRelation), new { id = result.Id }, result);
 
         }
-
+        /// <summary>
+        /// Retrieves details of a specific user relationship by its ID.
+        /// </summary>
+        /// <param name="id">The unique identifier of the relationship to retrieve</param>
+        /// <returns>The relationship details</returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<UserRelationModel>> GetRelation(int id)
         {
@@ -53,7 +64,11 @@ namespace UserProfileAPI.Controllers
                 ? NotFound(new { Message = $"კავშირი ID {id}-ით არ მოიძებნა" })
                 : Ok(relation);
         }
-
+        /// <summary>
+        /// Deletes a user relationship by its ID
+        /// </summary>
+        /// <param name="id">The unique identifier of the relationship to delete</param>
+        /// <returns>The deleted relationship details</returns>
         [HttpDelete("{id}")]
         public async Task<ActionResult<UserRelationModel>> DeleteRelatedUser(int id)
         {
