@@ -4,6 +4,7 @@ using System.Reflection;
 using UserProfileAPI.Data;
 using UserProfileAPI.Filters;
 using UserProfileAPI.Interfaces;
+using UserProfileAPI.Middlewares;
 using UserProfileAPI.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -41,15 +42,15 @@ builder.Services.AddControllers(options =>
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRelationUserRepository, RelatedUserRepository>();
-builder.Services.AddScoped<ValidationFilter>();
+
 
 builder.Services.AddLogging(logging =>
 {
     logging.AddConsole();
 });
 
-var app = builder.Build();
 
+var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -61,6 +62,10 @@ if (app.Environment.IsDevelopment())
 
     });
 }
+
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
 
 app.UseHttpsRedirection();
 
