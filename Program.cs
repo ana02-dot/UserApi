@@ -66,6 +66,14 @@ if (app.Environment.IsDevelopment())
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
+var supportedCultures = new[] { "en-US", "ka-GE" };
+var localizationOptions =
+    new RequestLocalizationOptions().SetDefaultCulture(supportedCultures[0])
+    .AddSupportedCultures(supportedCultures)
+    .AddSupportedUICultures(supportedCultures);
+
+app.UseRequestLocalization(localizationOptions);
+localizationOptions.ApplyCurrentCultureToResponseHeaders = true;
 
 app.UseHttpsRedirection();
 
