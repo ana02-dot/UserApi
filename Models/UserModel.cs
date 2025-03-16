@@ -55,5 +55,13 @@ namespace UserProfileAPI.Models
         [JsonIgnore]
         public List<UserRelationModel> UserRelations { get; set; } = new List<UserRelationModel>();
 
+        [Required(ErrorMessage = "მომხმარებლის სახელი სავალდებულოა")]
+        [StringLength(50, MinimumLength =4, ErrorMessage = "მომხმარებლის სახელი უნდა იყოს მაქსიმუმ 50 სიმბოლო და მინიმუმ 4")]
+        public string Username { get; set; }
+
+        [Required(ErrorMessage = "პაროლი სავალდებულოა")]
+        [StringLength(50, MinimumLength = 8, ErrorMessage = "პაროლი უნდა შეიცავდეს მინიმუმ 8 სიმბოლოს, მაქსიმუმ 50ს")]
+        public string Password { get; set; }
+
     }
 }
