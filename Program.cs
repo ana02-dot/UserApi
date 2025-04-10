@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -13,6 +14,15 @@ using UserProfileAPI.Middlewares;
 using UserProfileAPI.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var supportedCultures = new[] { "en-US", "ka-GE" };
+var localizationOptions = new RequestLocalizationOptions()
+    .SetDefaultCulture(supportedCultures[0])
+    .AddSupportedCultures(supportedCultures)
+    .AddSupportedUICultures(supportedCultures);
+
+localizationOptions.RequestCultureProviders.Clear();
+localizationOptions.RequestCultureProviders.Add(new AcceptLanguageHeaderRequestCultureProvider());
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -56,7 +66,6 @@ builder.Services.AddLogging(logging =>
     logging.AddConsole();
 });
 
-//builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -89,23 +98,14 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-/*var supportedCultures = new[] { "en-US", "ka-GE" };
-var localizationOptions =
-    new RequestLocalizationOptions().SetDefaultCulture(supportedCultures[0])
-    .AddSupportedCultures(supportedCultures)
-    .AddSupportedUICultures(supportedCultures);
-
 app.UseRequestLocalization(localizationOptions);
-localizationOptions.ApplyCurrentCultureToResponseHeaders = true;*/
 
+app.UseRouting();
 app.UseHttpsRedirection();
-
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();
