@@ -9,6 +9,6 @@ namespace UserProfileAPI.Interfaces
         Task<UserModel> AddUserAsync(CreateUserDTO userDto);
         Task<UserModel> UpdateUserAsync(int id, UpdateUserDTO updateUserDto);
         Task<UserModel> DeleteUserAsync(int id);
-
+        Task<List<UserModel>> GetUsersAsyncWithQuickSearch(string searchTerm);
     }
 }
