@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using UserProfileAPI.Data;
 using UserProfileAPI.Dtos;
 using UserProfileAPI.Filters;
@@ -15,7 +16,7 @@ using UserProfileAPI.Repositories;
 namespace UserProfileAPI.Controllers
 {
     [Route("api/[controller]")]
-    
+
     public class UserController : ControllerBase
     {
         private readonly DataContext _dbContext;
@@ -51,7 +52,7 @@ namespace UserProfileAPI.Controllers
         public async Task<ActionResult<UserModel>> AddUser(CreateUserDTO userDto)
         {
             var createdUser = await _userRepo.AddUserAsync(userDto);
-            return Ok(createdUser);
+            return Ok(new { Message = "მომხმარებელი წარმატებით დაემატა", createdUser });
         }
 
         /// <summary>
@@ -79,7 +80,7 @@ namespace UserProfileAPI.Controllers
             var deletedUser = await _userRepo.DeleteUserAsync(id);
             return deletedUser == null
                 ? NotFound(new { Message = "მომხმარებელი არ მოიძებნა" })
-                : Ok(deletedUser);
+                : Ok(new { Message = $"მომხმარებელი წარმატებით წაიშალა" });
         }
 
         /// <summary>
@@ -95,11 +96,11 @@ namespace UserProfileAPI.Controllers
             if (user == null) return NotFound("User not found");
             if (image == null || image.Length == 0) return BadRequest("No image provided");
 
-            
+
             var uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath ?? "wwwroot", "images", "users");
             if (!Directory.Exists(uploadsFolder)) Directory.CreateDirectory(uploadsFolder);
 
-           
+
             if (!string.IsNullOrEmpty(user.ImagePath))
             {
                 var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath ?? "wwwroot", user.ImagePath.TrimStart('/'));
@@ -119,6 +120,19 @@ namespace UserProfileAPI.Controllers
 
             return Ok(new { Message = $"ფოტო წარმატებით დაემატა" });
         }
+        /// <summary>
+        /// Retrieves user's list by their searchTerm.
+        /// </summary>
+        /// <param name="searchTerm"></param>
+        /// <returns>relevant user's list</returns>
+        [HttpGet("Search")]
+        public async Task<ActionResult<List<UserModel>>> QuickSearch(string searchTerm)
+        { 
+            var results = await _userRepo.GetUsersAsyncWithQuickSearch(searchTerm);
+            return results.IsNullOrEmpty()
+              ? NotFound(new {Message = "იუზერის მონაცემები ვერ მოიძებნა"}) : Ok(results);
+        }
+
     }
 }
 
