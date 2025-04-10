@@ -16,17 +16,17 @@ namespace UserProfileAPI.Middlewares
             _next = next;
         }
 
-        public async Task InvokeAsync(HttpContext context)
+        public async Task InvokeAsync(HttpContext context, ILogger<ExceptionHandlingMiddleware> logger)
         {
             try
             {
-                _logger.LogInformation("A request has come in");
+                logger.LogInformation("შემოვიდა მოთხოვნა");
                 await _next(context);
-                _logger.LogInformation("A requst has completed successfully");
+                logger.LogInformation("მოთხოვნა შესრულდა წარმატებით");
             }
             catch (Exception e)
             {
-                _logger.LogError($"მოხდა დაუმუშავებელი შეცდომა: {e}");
+                logger.LogError($"მოხდა დაუმუშავებელი შეცდომა: {e}");
 
                 await HandleExceptionAsync(context, e);
             }
