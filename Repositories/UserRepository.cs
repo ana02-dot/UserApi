@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using UserProfileAPI.Data;
 using UserProfileAPI.Dtos;
 using UserProfileAPI.Interfaces;
@@ -96,5 +97,23 @@ namespace UserProfileAPI.Repositories
 
             return user;
         }
+
+        public async Task<List<UserModel>> GetUsersAsyncWithQuickSearch(string searchTerm)
+        {
+            var query = _dbContext.Users.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                searchTerm = searchTerm.Trim().ToLower();
+                query = query.Where(u =>
+                    u.FirstName.ToLower().Contains(searchTerm) ||
+                    u.LastName.ToLower().Contains(searchTerm) ||
+                    u.PersonalNumber.Contains(searchTerm));
+                
+            }
+            return await query.ToListAsync();
+
+        }
+
     }
 }
