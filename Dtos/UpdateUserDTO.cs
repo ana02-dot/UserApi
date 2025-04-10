@@ -12,7 +12,8 @@ namespace UserProfileAPI.Dtos
         [RegularExpression(@"^([ა-ჰ]+|[a-zA-Z]+)$", ErrorMessage = "სახელი უნდა შეიცავდეს მხოლოდ ქართულ ან მხოლოდ ლათინურ ასოებს")]
         public string? LastName { get; set; }
 
-        [RegularExpression(@"^(ქალი|კაცი)$", ErrorMessage = "სქესი უნდა იყოს 'ქალი' ან 'კაცი'")]
+        [AllowedValues("ქალი", "კაცი", ErrorMessage = "სქესი უნდა იყოს 'ქალი' ან 'კაცი'")]
+        //[RegularExpression(@"^(ქალი|კაცი)$", ErrorMessage = "სქესი უნდა იყოს 'ქალი' ან 'კაცი'")]
         public string? GenderType { get; set; }
 
         [RegularExpression(@"^\d{11}$", ErrorMessage = "პირადი ნომერი უნდა შეიცავდეს 11 სიმბოლოს")]

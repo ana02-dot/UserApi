@@ -17,7 +17,7 @@ namespace UserProfileAPI.Dtos
         public string LastName { get; set; }
 
         [Required]
-        [RegularExpression(@"^(ქალი|კაცი)$", ErrorMessage = "სქესი უნდა იყოს 'ქალი' ან 'კაცი'")]
+        //[RegularExpression(@"^(ქალი|კაცი)$", ErrorMessage = "სქესი უნდა იყოს 'ქალი' ან 'კაცი'")]
         public string GenderType { get; set; }
 
         [Required]
