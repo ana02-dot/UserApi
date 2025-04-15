@@ -48,10 +48,35 @@ namespace UserProfileAPI.Controllers
         /// </summary>
         /// <param name="userDto">The data required to create a new user. See <see cref="CreateUserDTO"/> for required fields.</param>
         /// <returns>The created user's details</returns>
+        /// <remarks>
+        /// Sample request:
+        /// 
+        ///         Create/User
+        ///         {
+        ///                "firstName": "John",
+        ///                 "lastName": "Doe",
+        ///                 "GenderType: "კაცი",
+        ///                 "personalNumber": "12345678901",
+        ///                 "dateOfBirth": "1990-01-01",
+        ///                 "number": "1234567890",
+        ///                 "phoneNumberType": "მობილური",
+        ///                 "cityName": "Tbilisi"
+        ///                 
+        ///         }
+        ///             
+        /// </remarks>
+        /// <response code="201">Returns the success message and newly created user details</response>
+        /// <response code="400">If the user is not added correctly</response>
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost("Create/User")]
         public async Task<ActionResult<UserModel>> AddUser(CreateUserDTO userDto)
         {
             var createdUser = await _userRepo.AddUserAsync(userDto);
+            if (createdUser == null)
+            {
+                return BadRequest("მომხმარებელი ვერ დაემატა");
+            }
             return Ok(new { Message = "მომხმარებელი წარმატებით დაემატა", createdUser });
         }
 
