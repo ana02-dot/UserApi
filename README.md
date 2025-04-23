@@ -1,6 +1,6 @@
 # UserApi
 
-A RESTful API built with ASP.NET Core for managing physical users and their relationsheep with related users. This project implements key features like JWT authentication, Entity Framework Core with SQL Server, and follows best practices such as the Repository pattern.
+A RESTful API built with ASP.NET Core for managing physical users and their relationship with related users. This project implements key features like JWT authentication, Entity Framework Core with SQL Server, and follows best practices such as the Repository pattern.
 
 ## Features
 
