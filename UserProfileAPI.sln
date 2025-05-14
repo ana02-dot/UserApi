@@ -5,6 +5,8 @@ VisualStudioVersion = 17.12.35728.132
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserProfileAPI", "UserProfileAPI.csproj", "{C4097A29-C800-4284-8CBE-A9ACF99E7A21}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "User_Consumer", "..\User_Consumer\User_Consumer.csproj", "{F9483B3D-3428-47BF-8882-A863089204C9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,8 +17,15 @@ Global
 		{C4097A29-C800-4284-8CBE-A9ACF99E7A21}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C4097A29-C800-4284-8CBE-A9ACF99E7A21}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C4097A29-C800-4284-8CBE-A9ACF99E7A21}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F9483B3D-3428-47BF-8882-A863089204C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9483B3D-3428-47BF-8882-A863089204C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9483B3D-3428-47BF-8882-A863089204C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9483B3D-3428-47BF-8882-A863089204C9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AEE0BEBD-D17A-4530-8385-AF2F9238E66F}
 	EndGlobalSection
 EndGlobal
