@@ -22,12 +22,14 @@ namespace UserProfileAPI.Controllers
         private readonly DataContext _dbContext;
         private readonly IUserRepository _userRepo;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly IMessageProducer _messageProducer;
 
-        public UserController(DataContext dbContext, IUserRepository userRepo, IWebHostEnvironment webHostEnvironment)
+        public UserController(DataContext dbContext, IUserRepository userRepo, IWebHostEnvironment webHostEnvironment, IMessageProducer messageProducer)
         {
             _dbContext = dbContext;
             _userRepo = userRepo;
             _webHostEnvironment = webHostEnvironment;
+            _messageProducer = messageProducer;
         }
 
         /// <summary>
@@ -39,6 +41,8 @@ namespace UserProfileAPI.Controllers
         public async Task<ActionResult<UserModel>> GetUser(int id)
         {
             var user = await _userRepo.GetUserWithDetailsAsync(id);
+
+            _messageProducer.SendingMessage(user);
             return user == null
                 ? NotFound(new { Message = "მომხმარებელი არ მოიძებნა" })
                 : Ok(user);
@@ -77,6 +81,9 @@ namespace UserProfileAPI.Controllers
             {
                 return BadRequest("მომხმარებელი ვერ დაემატა");
             }
+            // Send a message to the queue
+            _messageProducer.SendingMessage(createdUser);
+
             return Ok(new { Message = "მომხმარებელი წარმატებით დაემატა", createdUser });
         }
 

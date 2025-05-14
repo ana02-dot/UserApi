@@ -12,6 +12,7 @@ using UserProfileAPI.Filters;
 using UserProfileAPI.Interfaces;
 using UserProfileAPI.Middlewares;
 using UserProfileAPI.Repositories;
+using UserProfileAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -59,6 +60,7 @@ builder.Services.AddControllers(options =>
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IRelationUserRepository, RelatedUserRepository>();
 builder.Services.AddScoped<IAuthorization, AuthorizationRepo>();
+builder.Services.AddScoped<IMessageProducer, MessageProducer>();
 
 
 builder.Services.AddLogging(logging =>
